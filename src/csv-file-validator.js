@@ -43,6 +43,7 @@
         csvData.forEach(function(row, rowIndex) {
             const columnData = {};
             const headers = [];
+            const fileHeaders = [];
 
             for (let i = 0; i < config.headers.length; i++) {
                 const data = config.headers[i];
@@ -57,11 +58,23 @@
             }
 
             row.forEach(function(columnValue, columnIndex) {
-                const valueConfig = config.headers[columnIndex];
 
-                if (!valueConfig) {
-                    return;
+                // get all column names from the first row
+                if (rowIndex === 0) {
+                    fileHeaders.push(columnValue);
+                } {
+
+                    // get config by column name
+                    const columnName = fileHeaders[columnIndex];
+                    const valueConfig = config.headers.find((element) => element.name === columnName)
+                    // config.headers[columnIndex];
+                    if (!valueConfig) {
+                        return;
+                    }
                 }
+
+
+
 
                 // header validation
                 if (rowIndex === 0) {
