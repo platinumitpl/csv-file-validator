@@ -65,7 +65,7 @@
                 })
                 // header validation 
                 headers.forEach(function(header, index){
-                    if (fileHeaders.indexOf(header.name) === -1) {
+                    if (fileHeaders.indexOf(header.name) === -1 && !header.hasOwnProperty('optional')) {
                         file.inValidMessages.push(
                             _isFunction(header.headerError)
                                 ? header.headerError(header.name)
