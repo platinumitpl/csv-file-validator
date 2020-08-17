@@ -39,11 +39,11 @@
             inValidMessages: [],
             data: []
         };
+        const fileHeaders = [];
 
         csvData.forEach(function(row, rowIndex) {
             const columnData = {};
             const headers = [];
-            const fileHeaders = [];
 
             for (let i = 0; i < config.headers.length; i++) {
                 const data = config.headers[i];
@@ -57,64 +57,75 @@
                 return;
             }
 
-            row.forEach(function(columnValue, columnIndex) {
-
-                // get all column names from the first row
-                if (rowIndex === 0) {
+            // get all column names
+            if (rowIndex === 0) {
+            row.forEach(function(columnValue, columnIndex){
                     fileHeaders.push(columnValue);
-                } {
 
-                    // get config by column name
-                    const columnName = fileHeaders[columnIndex];
-                    const valueConfig = config.headers.find((element) => element.name === columnName)
-                    // config.headers[columnIndex];
-                    if (!valueConfig) {
-                        return;
-                    }
-                }
-
-
-
-
-                // header validation
-                if (rowIndex === 0) {
-                    if (valueConfig.name !== columnValue) {
+                })
+                // header validation 
+                headers.forEach(function(header, index){
+                    if (fileHeaders.indexOf(header.name) === -1) {
                         file.inValidMessages.push(
-                            _isFunction(valueConfig.headerError)
-                                ? valueConfig.headerError(columnValue)
-                                : 'Header name ' + columnValue + ' is not correct or missing'
+                            _isFunction(header.headerError)
+                                ? header.headerError(header.name)
+                                : 'Header name ' + header.name + ' is not correct or missing'
                         );
                     }
+                })
+            } else {
 
-                    return;
-                }
-
-                if (valueConfig.required && !columnValue.length) {
-                    file.inValidMessages.push(
-                        _isFunction(valueConfig.requiredError)
-                            ? valueConfig.requiredError(valueConfig.name, rowIndex + 1, columnIndex + 1)
-                            : String(valueConfig.name + ' is required in the ' + (rowIndex + 1) + ' row / ' + (columnIndex + 1) + ' column')
-                    );
-                } else if (valueConfig.validate && !valueConfig.validate(columnValue)) {
-                    file.inValidMessages.push(
-                        _isFunction(valueConfig.validateError)
-                            ? valueConfig.validateError(valueConfig.name, rowIndex + 1, columnIndex + 1)
-                            : String(valueConfig.name + ' is not valid in the ' + (rowIndex + 1) + ' row / ' + (columnIndex + 1) + ' column')
-                    );
-                }
-
-                if (valueConfig.optional) {
-                    columnData[valueConfig.inputName] = columnValue;
-                }
-
-                if (valueConfig.isArray) {
-                    columnData[valueConfig.inputName] = columnValue.split(',').map(function(value) { 
-                        return value.trim();
-                    });
-                } else {
-                    columnData[valueConfig.inputName] = columnValue;
-                }
-            });
+                row.forEach(function(columnValue, columnIndex) {
+    
+                        // get config by column name
+                        const columnName = fileHeaders[columnIndex];
+                        const valueConfig = config.headers.find((element) => element.name === columnName)
+                        // config.headers[columnIndex];
+                        if (!valueConfig) {
+                            return;
+                        }
+    
+                    // // header validation
+                    // if (rowIndex === 0) {
+                    //     if (fileHeaders.indexOf(columnValue) === -1) {
+                    //         file.inValidMessages.push(
+                    //             _isFunction(valueConfig.headerError)
+                    //                 ? valueConfig.headerError(columnValue)
+                    //                 : 'Header name ' + columnValue + ' is not correct or missing'
+                    //         );
+                    //     }
+    
+                    //     return;
+                    // }
+    
+                    if (valueConfig.required && !columnValue.length) {
+                        file.inValidMessages.push(
+                            _isFunction(valueConfig.requiredError)
+                                ? valueConfig.requiredError(valueConfig.name, rowIndex + 1, columnIndex + 1)
+                                : String(valueConfig.name + ' is required in the ' + (rowIndex + 1) + ' row / ' + (columnIndex + 1) + ' column')
+                        );
+                    } else if (valueConfig.validate && !valueConfig.validate(columnValue)) {
+                        file.inValidMessages.push(
+                            _isFunction(valueConfig.validateError)
+                                ? valueConfig.validateError(valueConfig.name, rowIndex + 1, columnIndex + 1)
+                                : String(valueConfig.name + ' is not valid in the ' + (rowIndex + 1) + ' row / ' + (columnIndex + 1) + ' column')
+                        );
+                    }
+    
+                    if (valueConfig.optional) {
+                        columnData[valueConfig.inputName] = columnValue;
+                    }
+    
+                    if (valueConfig.isArray) {
+                        columnData[valueConfig.inputName] = columnValue.split(',').map(function(value) { 
+                            return value.trim();
+                        });
+                    } else {
+                        columnData[valueConfig.inputName] = columnValue;
+                    }
+                });
+            }
+            
 
             file.data.push(columnData);
         });
