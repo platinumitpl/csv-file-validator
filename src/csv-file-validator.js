@@ -53,7 +53,7 @@
                 }
             }
 
-            if (row.length < headers.length) {
+            if (rowIndex > 0 && row.length < headers.length) {
                 return;
             }
 
