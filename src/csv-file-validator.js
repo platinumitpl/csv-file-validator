@@ -54,10 +54,7 @@
             }
 
             if (row.length < headers.length) {
-                file.inValidMessages.push(
-                    String('Rząd numer ' + (rowIndex + 1) + 'posiada mniej kolumn niż to wymagane.' )
-                );
-                // return;
+                return;
             }
 
             // get all column names
